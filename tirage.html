@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Jeu de dés</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #eaf1fb;
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+  }
+  .container {
+    background: #fff;
+    border: 1px solid #cfd9e8;
+    border-radius: 14px;
+    padding: 30px;
+    max-width: 900px;
+    width: 100%;
+  }
+  h1 {
+    text-align: center;
+    color: #1d3a6b;
+  }
+  p.intro {
+    text-align: center;
+    color: #333;
+  }
+  .zones {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .player-box {
+    flex: 1;
+    min-width: 220px;
+    border: 1px solid #cfd9e8;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .player-box.human .header { background: #3a9d5d; }
+  .player-box.computer .header { background: #2f6fcf; }
+  .header {
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+  }
+  .body {
+    padding: 20px;
+    text-align: center;
+  }
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #1d3a6b;
+  }
+  .display-box {
+    border: 1px solid #cfd9e8;
+    border-radius: 8px;
+    font-size: 2.5em;
+    padding: 15px;
+    margin-bottom: 20px;
+    background: #fafcff;
+  }
+  .player-box.human .score-box { background: #e3f3e8; color: #2f7d4a; }
+  .player-box.computer .score-box { background: #e4ecfb; color: #2f6fcf; }
+  .score-box {
+    font-size: 1.6em;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .middle {
+    flex: 1;
+    min-width: 220px;
+    text-align: center;
+  }
+  button#tirerBtn {
+    background: #3a9d5d;
+    color: #fff;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+  }
+  button#tirerBtn:hover { background: #318a51; }
+  #message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 60px;
+    font-weight: bold;
+  }
+  #message.win { background: #fdf4d9; color: #8a6b1f; border: 1px solid #f0e0a0;}
+  #message.lose { background: #fde4e4; color: #a13b3b; border: 1px solid #f0b0b0;}
+  #message.empty { background: transparent; border: none; }
+  .rules {
+    margin-top: 30px;
+    border-top: 1px solid #cfd9e8;
+    padding-top: 15px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .rules ul { flex: 2; min-width: 250px; }
+  .rules .target {
+    flex: 1;
+    min-width: 200px;
+    border: 1px solid #cfd9e8;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+  }
+  #newGameBtn {
+    display: block;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #cfd9e8;
+    background: #f5f8fc;
+    cursor: pointer;
+    @media (max-width: 900px) {
+    .container { max-width: 95%; }
+    .zones { gap: 14px; }
+    .player-box, .middle { min-width: 180px; }
+  }}
+
+  /* Téléphone */
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    .container { padding: 16px; border-radius: 10px; }
+    h1 { font-size: 1.4em; }
+    p.intro { font-size: 0.85em; }
+    .zones {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .player-box, .middle {
+      min-width: 0;
+      width: 100%;
+    }
+    .display-box { font-size: 1.8em; padding: 10px; margin-bottom: 12px; }
+    .score-box { font-size: 1.2em; padding: 10px; }
+    .rules { flex-direction: column; }
+    button#tirerBtn, #newGameBtn { font-size: 0.95em; }
+  }
+
+  /* Petit téléphone */
+  @media (max-width: 360px) {
+    h1 { font-size: 1.1em; }
+    .display-box { font-size: 1.4em; }
+
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎲 Jeu de dés 🎲</h1>
+  <p class="intro">Tirez un dé. Si votre nombre est supérieur à celui de l'ordinateur, vous gagnez !<br>
+  Le premier à atteindre 10 remporte la partie.</p>
+
+  <div class="zones">
+    <div class="player-box human">
+      <div class="header">👤 Joueur humain</div>
+      <div class="body">
+        <label for="tirageHumain">Tirage</label>
+        <div class="display-box" id="tirageHumain">-</div>
+        <label for="scoreHumain">Score</label>
+        <div class="score-box" id="scoreHumain">0</div>
+      </div>
+    </div>
+
+    <div class="middle">
+      <button id="tirerBtn" onclick="jouer()">🎲 Tirer (au sort)</button>
+      <div id="message" class="empty"></div>
+    </div>
+
+    <div class="player-box computer">
+      <div class="header">💻 Ordinateur</div>
+      <div class="body">
+        <label for="tirageOrdinateur">Tirage</label>
+        <div class="display-box" id="tirageOrdinateur">-</div>
+        <label for="scoreOrdinateur">Score</label>
+        <div class="score-box" id="scoreOrdinateur">0</div>
+      </div>
+    </div>
+  </div>
+<div class="rules">
+    <ul>
+      <li>Cliquez sur "Tirer (au sort)" pour lancer les dés.</li>
+      <li>Si votre tirage est supérieur à celui de l'ordinateur, vous gagnez et votre score augmente de 1.</li>
+      <li>Sinon, vous perdez et votre score diminue de 0.25.</li>
+      <li>Le premier à atteindre 10 remporte la partie. Toutes les zones sont alors remises à zéro.</li>
+    </ul>
+    <div class="target">
+      <strong>Premier à atteindre 10</strong>
+      <p>🏆 gagne la partie !</p>
+    </div>
+  </div>
+
+  <button id="newGameBtn" onclick="reinitialiser()">🔄 Nouvelle partie</button>
+</div>
+<script src="tirage.js"></script>
+</body>
+</html>
